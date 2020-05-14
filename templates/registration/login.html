@@ -1,0 +1,93 @@
+{% load static %}
+<!DOCTYPE html>
+<html dir="ltr" lang="en-US">
+<head>
+
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <meta name="author" content="K3 Express" />
+  <!-- Stylesheets
+  ============================================= -->
+  <link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700|Roboto:300,400,500,700" rel="stylesheet" type="text/css" />
+  <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}" type="text/css" />
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css" />
+  <!-- One Page Module Specific Stylesheet -->
+  <link rel="stylesheet" href="{% static 'css/onepage.css' %}" type="text/css" />
+  <!-- / -->
+  <link rel="stylesheet" href="{% static 'css/dark.css' %}" type="text/css" />
+  <link rel="stylesheet" href="{% static 'css/font-icons.css' %}" type="text/css" />
+  <link rel="stylesheet" href="{% static 'css/et-line.css' %}" type="text/css" />
+  <link rel="stylesheet" href="{% static 'css/animate.css' %}" type="text/css" />
+  <link rel="stylesheet" href="{% static 'css/magnific-popup.css' %}" type="text/css" />
+  <link rel="stylesheet" href="{% static 'css/fonts.css' %}" type="text/css" />
+  <link rel="stylesheet" href="{% static 'css/responsive.css' %}" type="text/css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" />
+  
+  <!-- Document Title
+  ============================================= -->
+  <title>Lira Soft | Gerenciamento de Locações</title>
+
+</head>
+
+<body class="stretched" data-loader="11" data-loader-color="#543456">
+
+  <!-- Document Wrapper
+  ============================================= -->
+  <div id="wrapper" class="clearfix">
+
+    <!-- Slider
+    ============================================= -->
+    <section id="slider" class="slider-parallax full-screen">
+      <div class="slider-parallax-inner">
+        <div class="full-screen dark section nopadding nomargin noborder ohidden" style="background-image: url({% static 'images/4.jpg' %}); background-size: cover; background-position: center center;">
+          <div class="row nomargin" style="position: relative; z-index: 2;">
+            <div class="col-md-offset-7 col-md-5 full-screen" style="background-color: rgba(0,0,0,0.45);">
+	          <div class="vertical-middle col-padding">
+	        <div class="heading-block nobottomborder bottommargin-sm">
+	          <h1 style="font-size: 22px;">O Melhor Gerenciador de Locações</h1>
+		      <span style="font-size: 16px;" class="t300 capitalize ls1 notopmargin">100% na Nuvem!</span>
+	        </div>
+	        <form class="clearfix" method="post" style="max-width: 300px;">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                  <div class="col_full">
+                    <label for="{{ form.username.id_for_label }}" class="capitalize t600">Username:</label>
+                        {{ form.username }}
+                        {{ form.username.errors }}
+                  </div>
+                  <div class="col_full">
+                    <label for="{{ form.password.id_for_label }}" class="capitalize t600">Password:</label>
+                        {{ form.password }}
+                        {{ form.password.errors }}
+                  </div>
+		          <div class="col_full nobottommargin">
+		            <button type="submit" class="t400 capitalize button button-border button-light button-circle nomargin" value="submit">Acessar</button>
+                  </div>
+	        </form>
+	      </div>
+	        </div>
+	      </div>
+        </div>
+      </div>
+    </section><!-- #slider end -->
+  </div><!-- #wrapper end -->
+
+  <!-- Go To Top
+  ============================================= -->
+  <div id="gotoTop" class="icon-angle-up"></div>
+  <!-- External JavaScripts
+  ============================================= -->
+  <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
+  <script type="text/javascript" src="{% static 'js/plugins.js' %}"></script>
+  <!-- Google Map JavaScripts
+  ============================================= -->
+  <script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyBrIBCF8slTfv9R5QZcDug9Tprv3rxZ3Kg"></script>
+  <script type="text/javascript" src="{% static 'js/jquery.gmap.js' %}"></script>
+  <!-- Footer Scripts
+  ============================================= -->
+  <script type="text/javascript" src="{% static 'js/functions.js' %}"></script>
+  
+
+</body>
+</html>

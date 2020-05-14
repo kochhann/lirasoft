@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block main %}
+	<!-- News and Numbers
+	============================================= -->
+	<div class="postcontent nobottommargin col_last clearfix">
+
+		<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Fugiat, eos quibusdam accusamus. Maiores, distinctio similique at fugiat reiciendis corporis pariatur. Iusto, molestiae odio ullam quas ratione! Explicabo, sunt, totam mollitia eveniet quasi commodi maxime impedit quos magni deleniti? Laborum, ad, necessitatibus minima officiis mollitia commodi quia dolore enim animi doloribus.</p>
+		<p>{{ request.session.empresa }}</p>
+
+	</div><!-- .NewsAndNumbers end -->
+
+	<!-- Side Menu
+	============================================= -->
+	<div class="sidebar nobottommargin clearfix">
+		<div class="sidebar-widgets-wrap">
+
+			<div class="widget subscribe-widget clearfix">
+				<div class="dark" style="padding: 25px; background-color: #383838; border-radius: 2px;">
+					<nav class="nav-tree nobottommargin">
+						<ul>
+							<a href="{% url 'list_usuarios' %}" class="button button-sidemenu button-red"><i class="icon-users"></i>Usuários</a>
+							<a href="#" class="button button-sidemenu button-red"><i class="icon-phone2"></i>Equipamentos</a>
+							<a href="#" class="button button-sidemenu button-red"><i class="icon-note"></i>Contratos</a>
+							<a href="{% url 'list_clientes' %}" class="button button-sidemenu button-red"><i class="icon-building"></i>Clientes</a>
+							<a href="#" class="button button-sidemenu button-red"><i class="icon-bill"></i>Faturamento</a>
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</div><!-- .sideMenu end -->
+
+{% endblock %}

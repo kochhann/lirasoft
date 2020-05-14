@@ -1,0 +1,115 @@
+{% load static %}
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="author" content="K3 Express" />
+    <!-- Stylesheets
+    ============================================= -->
+    <link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700|Roboto:300,400,500,700" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css" />
+    <!-- One Page Module Specific Stylesheet -->
+    <link rel="stylesheet" href="{% static 'css/onepage.css' %}" type="text/css" />
+    <!-- / -->
+    <link rel="stylesheet" href="{% static 'css/dark.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'css/font-icons.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'css/et-line.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'css/animate.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'css/magnific-popup.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'css/fonts.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" />
+
+    <style>
+        .button-pt {
+            padding-top:30px;
+        }
+        .footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+        }
+    </style>
+    <style>.side-header #primary-menu, .side-header #primary-menu ul { font-family: 'Lato'; }</style>
+
+    <!-- Document Title
+    ============================================= -->
+    <title>Lira Soft | by K3 Express</title>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+</head>
+<!--<body class="stretched side-header open-header push-wrapper close-header-on-scroll">-->
+<body class="stretched side-panel-left push-wrapper close-header-on-scroll">
+
+    <!-- Side Panel Overlay
+    ============================================= -->
+    <div class="body-overlay"></div>
+    <div id="side-panel" class="dark">
+		<div id="side-panel-trigger-close" class="side-panel-trigger"><a href="#"><i class="icon-line-cross"></i></a></div>
+		<div class="side-panel-wrap">
+			<div class="widget clearfix">
+				<h4>Módulos</h4>
+				<nav class="nav-tree nobottommargin">
+					<ul>
+						<li><a href="#"><i class="icon-home"></i>Home</a></li>
+						<li><a href="#"><i class="icon-users"></i>Usuários</a></li>
+						<li><a href="#"><i class="icon-phone2"></i>Equipamentos</a></li>
+                        <li><a href="#"><i class="icon-note"></i>Contratos</a></li>
+                        <li><a href="#"><i class="icon-building"></i>Clientes</a></li>
+						<li><a href="#"><i class="icon-bill"></i>Faturamento</a></li>
+					</ul>
+				</nav>
+			</div>
+		</div>
+	</div>
+
+    <!-- #side panel overlay end -->
+
+    <!-- Document Wrapper
+    ============================================= -->
+
+    <!-- Header
+    ============================================= -->
+    <header id="header" class="transparent-header semi-transparent transparent-header-responsive full-header dark" data-sticky-class="not-dark">
+        <div id="header-wrap">
+            <div class="container clearfix">
+                <h1>TESTE</h1>
+            </div>
+        </div>
+    </header><!-- #header end -->
+
+    <!-- Content
+    ============================================= -->
+    <section id="content">
+        <div class="content-wrap">
+            <div class="container clearfix">
+                {% block main %}
+
+                {% endblock %}
+            </div>
+        </div>
+    </section><!-- #content end -->
+
+    <!-- Go To Top
+    ============================================= -->
+    <div id="gotoTop" class="icon-angle-up"></div>
+    <!-- External JavaScripts
+    ============================================= -->
+    <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/plugins.js' %}"></script>
+    <!-- Google Map JavaScripts
+    ============================================= -->
+    <script type="text/javascript" src="{% static 'js/jquery.gmap.js' %}"></script>
+    <!-- Footer Scripts
+    ============================================= -->
+    <script type="text/javascript" src="{% static 'js/functions.js' %}"></script>
+</body>
+</html>
