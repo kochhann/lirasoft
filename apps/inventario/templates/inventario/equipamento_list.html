@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block main %}
+    List<br>
+    <a href="{% url 'create_equipamentos' %}" class="btn btn-info">Novo</a><br>
+    <a href="{% url 'list_tipo_equip' %}" class="btn btn-info">Tipos</a><br>
+    <a href="{% url 'list_acessorios' %}" class="btn btn-info">Acessorios</a><br>
+    {% for equipamento in object_list %}
+        <a href="{% url 'edit_equipamentos' equipamento.pk %}">{{ equipamento }}</a><br>
+        <a href="{% url 'delete_equipamentos' equipamento.pk %}">Deletar</a><br>
+    {% endfor %}
+    <a href="#" data-toggle="modal" data-target="#contactFormModal" class="sticky-side-element">Opções</a>
+
+{% endblock %}

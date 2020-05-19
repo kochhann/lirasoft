@@ -72,7 +72,7 @@ class Cliente(models.Model):
     senhaWeb = models.CharField("Senha", max_length=100, blank=True, null=True)
     tipo = models.CharField("Tipo", max_length=2, choices=TIPO, default='01')
     dataCriacao = models.DateTimeField(default=timezone.now)
-    restricao = models.BooleanField("Restricao", blank=True, default=True)
+    restricao = models.BooleanField("Restricao", blank=True, default=False)
     textorestricao = models.CharField("Observacao Restricao", max_length=200, default='', blank=True, null=True)
     ativo = models.BooleanField("Ativo", blank=True, default=True)
     data_desativado = models.DateTimeField(blank=True, null=True)
@@ -87,3 +87,4 @@ class Cliente(models.Model):
 
     def __str__(self):
         return self.nome
+

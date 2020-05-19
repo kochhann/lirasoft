@@ -15,7 +15,7 @@ class UsuariosList(ListView):
 
     def get_queryset(self):
         empresa_in = self.request.user.usuario.empresa
-        return Usuario.objects.filter(empresa=empresa_in)
+        return Usuario.objects.filter(empresa=empresa_in, ativo=True)
 
 
 class UsuariosEdit(UpdateView):
@@ -39,6 +39,18 @@ class UsuariosCreate(CreateView):
         usuario.user = user
         usuario.save()
         return super(UsuariosCreate, self).form_valid(form)
+
+
+class UsuariosDelete(DeleteView):
+    model = Usuario
+    success_url = reverse_lazy('list_usuarios')
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.user.is_active = False
+        self.object.user.save()
+        self.object.soft_delete()
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class ClientesList(ListView):

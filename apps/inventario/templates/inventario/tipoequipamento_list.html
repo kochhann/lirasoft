@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block main %}
+    List<br>
+    <a href="{% url 'create_tipo_equip' %}" class="btn btn-info">Novo</a><br>
+    {% for tipo in object_list %}
+        <a href="{% url 'edit_tipo_equip' tipo.pk %}">{{ tipo }}</a><br>
+        <a href="{% url 'delete_tipo_equip' tipo.pk %}">Deletar</a><br>
+    {% endfor %}
+    <a href="#" data-toggle="modal" data-target="#contactFormModal" class="sticky-side-element">Opções</a>
+
+{% endblock %}

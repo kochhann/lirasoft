@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block main %}
+    List<br>
+    <a href="{% url 'create_acessorios' %}" class="btn btn-info">Novo</a><br>
+    {% for acessorio in object_list %}
+        <a href="{% url 'edit_acessorios' acessorio.pk %}">{{ acessorio }}</a><br>
+        <a href="{% url 'delete_acessorios' acessorio.pk %}">Deletar</a><br>
+    {% endfor %}
+    <a href="#" data-toggle="modal" data-target="#contactFormModal" class="sticky-side-element">Opções</a>
+
+{% endblock %}

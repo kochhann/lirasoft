@@ -5,6 +5,7 @@
     <a href="{% url 'create_usuarios' %}" class="btn btn-info">Novo</a><br>
     {% for usuario in object_list %}
         <a href="{% url 'edit_usuarios' usuario.pk %}">{{ usuario }}</a><br>
+        <a href="{% url 'delete_usuarios' usuario.pk %}">Deletar</a><br>
     {% endfor %}
     <a href="#" data-toggle="modal" data-target="#contactFormModal" class="sticky-side-element">Opções</a>
 
