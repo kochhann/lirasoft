@@ -1,4 +1,5 @@
 from django.db import models
+from django.http import HttpRequest
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.timezone import now
@@ -13,14 +14,14 @@ class Contrato(models.Model):
     )
     codigo = models.AutoField("Código", primary_key=True, blank=False, null=False)
     empresa = models.ForeignKey(Empresa, on_delete=models.PROTECT)
-    cliente = models.OneToOneField(Cliente, on_delete=models.PROTECT)
+    cliente = models.ForeignKey(Cliente, on_delete=models.PROTECT)
     dataIni = models.DateField("Data Inicio")
     dataFim = models.DateField("Data Término", blank=True, null=True)
     valor = models.DecimalField("Preço", max_digits=100, decimal_places=2, blank=False,
                                 default=0, null=False)
     tipo = models.CharField("Tipo", max_length=7, choices=TIPO, default='mensal')
-    observacoes = models.CharField("Observações", max_length=300)
-    obsnota = models.CharField("Observações", max_length=300, blank=True, null=True)
+    observacoes = models.CharField("Obs. Geral", max_length=300)
+    obsnota = models.CharField("Obs. Nota", max_length=300, blank=True, null=True)
     valorproporcional = models.DecimalField("R$ Proporcional", max_digits=100, decimal_places=2,
                                             default=0, blank=True, null=True)
     emitir_nota = models.BooleanField("Emitir Nota", blank=True, default=True)
@@ -30,6 +31,7 @@ class Contrato(models.Model):
     ativo = models.BooleanField("Ativo", blank=True, default=True)
     data_desativado = models.DateTimeField(blank=True, null=True)
 
+
     def soft_delete(self):
         self.ativo = False
         self.data_desativado = timezone.now()
@@ -37,9 +39,6 @@ class Contrato(models.Model):
 
     def get_absolute_url(self):
         return reverse('list_contratos')
-
-    def __str__(self):
-        return self.codigo + ' - ' + self.cliente.razaoSocial
 
 
 class QuadroAcessorio(models.Model):
@@ -57,10 +56,10 @@ class QuadroAcessorio(models.Model):
         self.save()
 
     def get_absolute_url(self):
-        return reverse('list_quadro_acessorios')
+        return f"/locacao/contrato/editar/{self.contrato.pk}/"
 
     def __str__(self):
-        return self.quantidade + ' - ' + self.acessorio.descricao
+        return str(self.quantidade) + ' - ' + self.acessorio.descricao
 
 
 class QuadroEquipamentos(models.Model):
@@ -69,19 +68,12 @@ class QuadroEquipamentos(models.Model):
     contrato = models.ForeignKey(Contrato, on_delete=models.PROTECT)
     equipamento = models.ForeignKey(TipoEquipamento, on_delete=models.PROTECT)
     quantidade = models.IntegerField("Quantidade", blank=False, null=False, default=0)
-    ativo = models.BooleanField("Ativo", blank=True, default=True)
-    data_desativado = models.DateTimeField(blank=True, null=True)
-
-    def soft_delete(self):
-        self.ativo = False
-        self.data_desativado = timezone.now()
-        self.save()
 
     def get_absolute_url(self):
-        return reverse('list_quadro_equipamentos')
+        return f"/locacao/contrato/editar/{self.contrato.pk}/"
 
     def __str__(self):
-        return self.quantidade + ' - ' + self.equipamento.marca + ' ' + self.equipamento.modelo
+        return str(self.quantidade) + ' - ' + self.equipamento.marca + ' ' + self.equipamento.modelo
 
 
 class ListaEquipamento(models.Model):
@@ -102,3 +94,7 @@ class ListaEquipamento(models.Model):
 
     def __str__(self):
         return self.equipamento.serial
+
+def count_quadro(contrato):
+    quadro = contrato.quadroequipamentos_set.filter(ativo=True)
+    return quadro.count()

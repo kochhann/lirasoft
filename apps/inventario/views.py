@@ -1,6 +1,7 @@
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 
+from .forms import EquipamentoForm
 from .models import TipoEquipamento, Equipamento, Acessorio
 from django.views.generic import (
     ListView,
@@ -59,7 +60,12 @@ class EquipamentoEdit(UpdateView):
 
 class EquipamentoCreate(CreateView):
     model = Equipamento
-    fields = ['tipo', 'status', 'serial']
+    form_class = EquipamentoForm
+
+    def get_form_kwargs(self):
+        kwargs = super(EquipamentoCreate, self).get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
 
     def form_valid(self, form):
         equipamento = form.save(commit=False)

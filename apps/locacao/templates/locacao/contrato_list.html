@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block main %}
+    List<br>
+    <a href="{% url 'create_contratos' %}" class="btn btn-info">Novo</a><br>
+    {% for contrato in object_list %}
+        <a href="{% url 'edit_contratos' contrato.pk %}">{{ contrato.codigo }} - {{ contrato.cliente }}</a><br>
+        <a href="{% url 'delete_contratos' contrato.pk %}">Deletar</a><br>
+    {% endfor %}
+    <a href="#" data-toggle="modal" data-target="#contactFormModal" class="sticky-side-element">Opções</a>
+
+{% endblock %}
