@@ -32,6 +32,7 @@ class Equipamento(models.Model):
         ('1', 'DISPONIVEL'),
         ('2', 'LOCADO'),
         ('3', 'MANUTENCAO'),
+        ('4', 'PERDIDO'),
     )
     serial = models.CharField("Serial", max_length=100, primary_key=True, blank=False, null=False)
     empresa = models.ForeignKey(Empresa, on_delete=models.PROTECT, default='')
@@ -44,6 +45,22 @@ class Equipamento(models.Model):
         self.ativo = False
         self.data_desativado = timezone.now()
         self.save()
+
+    def contract_bond(self):
+        if self.status == '1':
+            self.status = '2'
+            self.save()
+            return True
+        else:
+            return False
+
+    def contract_unbond(self):
+        if self.status == '2':
+            self.status = '1'
+            self.save()
+            return True
+        else:
+            return False
 
     def get_absolute_url(self):
         return reverse('list_equipamentos')
@@ -71,3 +88,12 @@ class Acessorio(models.Model):
 
     def __str__(self):
         return self.descricao
+
+
+class HistoricoEquipamento(models.Model):
+    codigo = models.AutoField("Código", primary_key=True)
+    empresa = models.ForeignKey(Empresa, on_delete=models.PROTECT, default='')
+    descricao = models.CharField("Descrição", max_length=100, default='Padrão', blank=True, null=True)
+    equipamento = models.ForeignKey(Equipamento, on_delete=models.PROTECT, blank=False, null=False)
+    status = models.CharField("Status", max_length=2, default='1')
+    data_evento = models.DateTimeField(blank=True, null=True)

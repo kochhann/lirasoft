@@ -50,6 +50,6 @@
         </tr>
     </table>
     {% if object.quadroequipamentos_set.count > 0 %}
-        <a href="" class="btn btn-success">Vincular Equipamentos</a>
+        <a href="{% url 'vincular_equipamento' gContrato=object.pk gEmpresa=request.session.empresa_id %}" class="btn btn-success">Vincular Equipamentos</a>
     {% endif %}
 {% endblock %}

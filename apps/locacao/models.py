@@ -1,5 +1,5 @@
 from django.db import models
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponseRedirect
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.timezone import now
@@ -78,6 +78,7 @@ class QuadroEquipamentos(models.Model):
 
 class ListaEquipamento(models.Model):
     codigo = models.AutoField("Código", primary_key=True)
+    empresa = models.ForeignKey(Empresa, on_delete=models.PROTECT)
     contrato = models.ForeignKey(Contrato, on_delete=models.PROTECT)
     equipamento = models.ForeignKey(Equipamento, on_delete=models.PROTECT)
     ativo = models.BooleanField("Ativo", blank=True, default=True)
@@ -90,11 +91,7 @@ class ListaEquipamento(models.Model):
         self.save()
 
     def get_absolute_url(self):
-        return reverse('list_lista_equipamentos')
+        return f"/locacao/contrato/editar/{self.contrato.pk}/"
 
     def __str__(self):
         return self.equipamento.serial
-
-def count_quadro(contrato):
-    quadro = contrato.quadroequipamentos_set.filter(ativo=True)
-    return quadro.count()

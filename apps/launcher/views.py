@@ -8,12 +8,15 @@ from apps.launcher.forms import SignUpForm
 
 @login_required
 def home(request):
-    return render(request, 'launcher/index.html')
+    request.session['empresa'] = request.user.usuario.empresa.nome
+    request.session['empresa_id'] = request.user.usuario.empresa.pk
+    return render(request, 'launcher/dashboard.html')
 
 
 @login_required
 def dashboard(request):
     request.session['empresa'] = request.user.usuario.empresa.nome
+    request.session['empresa_id'] = request.user.usuario.empresa.pk
     return render(request, 'launcher/dashboard.html')
 
 

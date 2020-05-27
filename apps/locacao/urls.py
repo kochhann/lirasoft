@@ -12,5 +12,9 @@ urlpatterns = [
     path('quadro_acessorio/criar/<int:contrato_id>/', QuadroAcessorioCreate.as_view(), name='create_quadro_acessorio'),
     path('quadro_acessorio/editar/<int:pk>/', QuadroAcessorioEdit.as_view(), name='edit_quadro_acessorio'),
     path('quadro_acessorio/deletar/<int:pk>/', QuadroAcessorioDelete.as_view(), name='delete_quadro_acessorio'),
+    path('lista_equipamento/criar/<int:contrato_id>/', ListaEquipamentoCreate.as_view(), name='create_lista'),
+    path('vincular_equipamento/<int:gContrato>/<slug:gEmpresa>/', vincularEquipamento, name='vincular_equipamento'),
+    path('grava_equipamento/<int:gContrato>/<slug:gEmpresa>/', gravaEquipamentoVinculado, name='grava_equipamento'),
+
 
 ]

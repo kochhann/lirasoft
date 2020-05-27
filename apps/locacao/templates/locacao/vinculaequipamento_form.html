@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+    <!-- Vincular Equipamento -> Contrato
+    ============================================= -->
+        {% for message in messages %}
+          <div class="alert {{ message.tags }} alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            {{ message }}
+          </div>
+        {% endfor %}
+        <h3>Vincular Equipamento - Contrato {{ request.session.contrato }} | {{ request.session.n_contrato }}</h3>
+        <form id="vincularEquipForm" name="vincularEquipForm" class="nobottommargin"
+              action="{% url 'grava_equipamento' gContrato=request.session.contrato gEmpresa=request.session.empresa_id %}" method="post">
+        {% csrf_token %}
+            <div class="col_full">
+                <label for="vincularEquipFormSerie">Número de Série:</label>
+                <input type="text" id="vincularEquipFormSerie" name="vincularEquipFormSerie"
+                       value="" class="form-control" autofocus/>
+            </div>
+            <p>Já foram vinculados {{ request.session.vinculados }} de {{ request.session.cadastrados }}</p>
+            <div class="col_half nobottommargin">
+                <button class="button button-3d button-black nomargin" id="vincularEquipForm-submit"
+                        name="vincularEquipForm-submit" value="register" type="submit">Gravar</button>
+            </div>
+            <div class="col_half col_last nobottommargin">
+                <a href="{% url 'edit_contratos' request.session.contrato %}"
+                   class="button button-3d button-black nomargin" id="vincularEquipForm-sair"
+                   name="vincularEquipForm-sair" value="sair">Sair</a>
+            </div>
+        </form><!-- #vincular equipamento  end -->
+
+{% endblock %}
