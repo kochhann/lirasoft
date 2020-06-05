@@ -15,6 +15,7 @@ urlpatterns = [
     path('lista_equipamento/criar/<int:contrato_id>/', ListaEquipamentoCreate.as_view(), name='create_lista'),
     path('vincular_equipamento/<int:gContrato>/<slug:gEmpresa>/', vincularEquipamento, name='vincular_equipamento'),
     path('grava_equipamento/<int:gContrato>/<slug:gEmpresa>/', gravaEquipamentoVinculado, name='grava_equipamento'),
-
+    path('desvincular_equipamento/<int:gContrato>/<slug:gEmpresa>/', desvincularEquipamento, name='desvincular_equipamento'),
+    path('grava_equipamento_desv/<int:gContrato>/<slug:gEmpresa>/', gravaEquipamentoDesvinculado, name='grava_equipamento_desv'),
 
 ]

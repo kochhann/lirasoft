@@ -4,14 +4,6 @@
 
     <!-- Vincular Equipamento -> Contrato
     ============================================= -->
-        {% for message in messages %}
-          <div class="alert {{ message.tags }} alert-dismissible" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-            {{ message }}
-          </div>
-        {% endfor %}
         <h3>Vincular Equipamento - Contrato {{ request.session.contrato }} | {{ request.session.n_contrato }}</h3>
         <form id="vincularEquipForm" name="vincularEquipForm" class="nobottommargin"
               action="{% url 'grava_equipamento' gContrato=request.session.contrato gEmpresa=request.session.empresa_id %}" method="post">

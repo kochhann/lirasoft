@@ -20,7 +20,7 @@ class Contrato(models.Model):
     valor = models.DecimalField("Preço", max_digits=100, decimal_places=2, blank=False,
                                 default=0, null=False)
     tipo = models.CharField("Tipo", max_length=7, choices=TIPO, default='mensal')
-    observacoes = models.CharField("Obs. Geral", max_length=300)
+    observacoes = models.CharField("Obs. Geral", max_length=300, blank=True, null=True)
     obsnota = models.CharField("Obs. Nota", max_length=300, blank=True, null=True)
     valorproporcional = models.DecimalField("R$ Proporcional", max_digits=100, decimal_places=2,
                                             default=0, blank=True, null=True)
@@ -51,6 +51,11 @@ class QuadroAcessorio(models.Model):
     data_desativado = models.DateTimeField(blank=True, null=True)
 
     def soft_delete(self):
+        a = Acessorio.objects.filter(codigo=self.acessorio.pk)
+        ac = a.first()
+        print(str(ac.quantidade) + ' - ' + str(self.quantidade))
+        ac.quantidade = ac.quantidade + self.quantidade
+        ac.save()
         self.ativo = False
         self.data_desativado = timezone.now()
         self.save()

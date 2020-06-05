@@ -21,11 +21,13 @@
                 </td>
             </tr>
         {% endfor %}
-        <tr>
-            <td>
-                <a href="{% url 'create_quadro' object.pk %}" class="btn btn-success">Inserir Equipamento</a>
-            </td>
-        </tr>
+        {% if object.pk > 0 %}
+            <tr>
+                <td>
+                    <a href="{% url 'create_quadro' object.pk %}" class="btn btn-success">Inserir Equipamento</a>
+                </td>
+            </tr>
+        {% endif %}
     </table>
     <table>
         <tr>
@@ -43,13 +45,19 @@
             </tr>
             {% endif %}
         {% endfor %}
-        <tr>
-            <td>
-                <a href="{% url 'create_quadro_acessorio' object.pk %}" class="btn btn-success">Inserir Acessorio</a>
-            </td>
-        </tr>
+        {% if object.pk > 0 %}
+            <tr>
+                <td>
+                    <a href="{% url 'create_quadro_acessorio' object.pk %}" class="btn btn-success">Inserir Acessorio</a>
+                </td>
+            </tr>
+        {% endif %}
     </table>
     {% if object.quadroequipamentos_set.count > 0 %}
         <a href="{% url 'vincular_equipamento' gContrato=object.pk gEmpresa=request.session.empresa_id %}" class="btn btn-success">Vincular Equipamentos</a>
+    {% endif %}
+
+    {% if object.quadroequipamentos_set.count > 0 %}
+        <a href="{% url 'desvincular_equipamento' gContrato=object.pk gEmpresa=request.session.empresa_id %}" class="btn btn-success">Desvincular Equipamentos</a>
     {% endif %}
 {% endblock %}

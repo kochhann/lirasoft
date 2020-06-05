@@ -13,12 +13,12 @@ from django.views.generic import (
 )
 
 from ..empresa.models import Empresa
-from ..inventario.models import Equipamento, HistoricoEquipamento
+from ..inventario.models import Equipamento, HistoricoEquipamento, Acessorio
 
 
 def vincularEquipamento(request, gContrato, gEmpresa):
     request.session['contrato'] = gContrato
-    qsCont = Contrato.objects.filter(codigo=gContrato)
+    qsCont = Contrato.objects.filter(codigo=gContrato, ativo=True, empresa=gEmpresa)
     request.session['n_contrato'] = qsCont[0].cliente.nome
     cadastrados = 0
     vinculados = 0
@@ -32,7 +32,8 @@ def vincularEquipamento(request, gContrato, gEmpresa):
         qsEquip = qsCont[0].listaequipamento_set.all()
         if qsEquip.exists():
             for item in qsEquip.all():
-                vinculados = vinculados + 1
+                if item.ativo:
+                    vinculados = vinculados + 1
     else:
         messages.warning(request, 'Contrato não foi localizado!')
         return redirect(urlms)
@@ -43,7 +44,7 @@ def vincularEquipamento(request, gContrato, gEmpresa):
 
 def gravaEquipamentoVinculado(request, gContrato, gEmpresa):
     serial = request.POST.get('vincularEquipFormSerie') or ""
-    equip = Equipamento.objects.filter(serial=serial)
+    equip = Equipamento.objects.filter(serial=serial, empresa=gEmpresa, ativo=True)
     lEmpresa = Empresa.objects.filter(pk=gEmpresa)
     empresa_logada = lEmpresa.first()
     lCont = Contrato.objects.filter(codigo=gContrato, empresa=empresa_logada.pk)
@@ -52,7 +53,7 @@ def gravaEquipamentoVinculado(request, gContrato, gEmpresa):
     lEqpContrato = contrato.listaequipamento_set.all()
     print(lEqpContrato.all())
     for item in lEqpContrato.all():
-        if item.equipamento.serial == serial:
+        if item.equipamento.serial == serial and item.equipamento.ativo:
             messages.warning(request, 'O equipamento (' + serial + ') já foi vinculado!')
             return redirect(urlms)
     if not equip:
@@ -76,9 +77,9 @@ def gravaEquipamentoVinculado(request, gContrato, gEmpresa):
         print(iEquip.status)
         iEquip.contract_bond()
         hist = HistoricoEquipamento(
-            empresa=empresa_logada,
+            empresa=gEmpresa,
             descricao='Vinculado ao contrato ' + str(gContrato) + ' empresa ' + str(gEmpresa),
-            equipamento=iEquip,
+            equipamento=serial,
             status='2',
             data_evento=timezone.now()
         )
@@ -92,6 +93,59 @@ def gravaEquipamentoVinculado(request, gContrato, gEmpresa):
         lista.save()
         messages.success(request, 'O equipamento (' + serial + ') foi vinculado!')
         return redirect(urlms)
+    return redirect(urlms)
+
+
+def desvincularEquipamento(request, gContrato, gEmpresa):
+    request.session['contrato'] = gContrato
+    qsCont = Contrato.objects.filter(codigo=gContrato, ativo=True, empresa=gEmpresa)
+    request.session['n_contrato'] = qsCont[0].cliente.nome
+    vinculados = 0
+    urlms = '/locacao/desvincular_equipamento/' + str(gContrato) + '/' + str(gEmpresa) + '/'
+    if qsCont.exists():
+        qsEquip = qsCont[0].listaequipamento_set.all()
+        if qsEquip.exists():
+            for item in qsEquip.all():
+                vinculados = vinculados + 1
+    else:
+        messages.warning(request, 'Contrato não foi localizado!')
+        return redirect(urlms)
+    request.session['vinculados'] = vinculados
+    return render(request, 'locacao/desvinculaequipamento_form.html')
+
+
+def gravaEquipamentoDesvinculado(request, gContrato, gEmpresa):
+    serial = request.POST.get('desvincularEquipFormSerie') or ""
+    equip = Equipamento.objects.filter(serial=serial, empresa=gEmpresa, ativo=True)
+    urlms = '/locacao/desvincular_equipamento/' + str(gContrato) + '/' + str(gEmpresa) + '/'
+
+    if not equip:
+        messages.warning(request, 'O equipamento (' + serial + ') não foi localizado!')
+        return redirect(urlms)
+
+    equipamento = equip.first()
+
+    lCont = Contrato.objects.filter(codigo=gContrato, empresa=gEmpresa)
+    contrato = lCont.first()
+    lEqpContrato = contrato.listaequipamento_set.all()
+    contem = False
+    for item in lEqpContrato.all():
+        if item.equipamento.serial == serial and item.equipamento.ativo:
+            item.soft_delete()
+            contem = True
+    if contem:
+        equipamento.contract_unbond()
+        hist = HistoricoEquipamento(
+            empresa=gEmpresa,
+            descricao='Desvinculado do contrato ' + str(gContrato) + ' empresa ' + str(gEmpresa),
+            equipamento=serial,
+            status='1',
+            data_evento=timezone.now()
+        )
+        hist.save()
+        messages.warning(request, 'O equipamento (' + serial + ') foi desvinculado!')
+        return redirect(urlms)
+
     return redirect(urlms)
 
 
@@ -119,6 +173,7 @@ class ContratoCreate(CreateView):
         contrato.save()
         return super(ContratoCreate, self).form_valid(form)
 
+
 class ContratoEdit(UpdateView):
     model = Contrato
     fields = ['tipo', 'dataFim', 'valor', 'emitir_nota',
@@ -131,6 +186,32 @@ class ContratoDelete(DeleteView):
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
+        qsEquip = self.object.quadroequipamentos_set.all()
+        qsAcess = self.object.quadroacessorio_set.all()
+        if qsAcess.exists():
+            for item in qsAcess.all():
+                item.soft_delete()
+        if qsEquip.exists():
+            for item in qsEquip.all():
+                item.delete()
+        lsEquip = self.object.listaequipamento_set.all()
+        if lsEquip.exists():
+            for item in lsEquip.all():
+                if item.ativo:
+                    item.soft_delete()
+                    e = Equipamento.objects.filter(serial=item.equipamento.pk)
+                    eqp = e.first()
+                    eqp.contract_unbond()
+                    hist = HistoricoEquipamento(
+                        empresa=item.empresa.pk,
+                        descricao='Desvinculado do contrato ' + str(self.object.pk) +
+                                  ' empresa ' + str(self.object.empresa.pk),
+                        equipamento=eqp.serial,
+                        status='1',
+                        data_evento=timezone.now()
+                    )
+                    hist.save()
+        messages.success(request, 'Contrato finalizado!')
         self.object.soft_delete()
         return HttpResponseRedirect(self.get_success_url())
 
@@ -188,6 +269,13 @@ class QuadroAcessorioCreate(CreateView):
 
     def form_valid(self, form):
         quadro = form.save(commit=False)
+        a = Acessorio.objects.filter(codigo=quadro.acessorio.pk)
+        ac = a.first()
+        if ac.quantidade >= quadro.quantidade:
+            ac.quantidade = ac.quantidade - quadro.quantidade
+            ac.save()
+        else:
+            return super(QuadroAcessorioCreate, self).form_valid(form)
         quadro.empresa = self.request.user.usuario.empresa
         quadro.save()
         return super(QuadroAcessorioCreate, self).form_valid(form)

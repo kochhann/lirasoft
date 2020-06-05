@@ -44,6 +44,14 @@ class Equipamento(models.Model):
     def soft_delete(self):
         self.ativo = False
         self.data_desativado = timezone.now()
+        hist = HistoricoEquipamento(
+            empresa=self.empresa.pk,
+            descricao='Equipamento excluído!',
+            equipamento=self.serial,
+            status='0',
+            data_evento=timezone.now()
+        )
+        hist.save()
         self.save()
 
     def contract_bond(self):
@@ -92,8 +100,8 @@ class Acessorio(models.Model):
 
 class HistoricoEquipamento(models.Model):
     codigo = models.AutoField("Código", primary_key=True)
-    empresa = models.ForeignKey(Empresa, on_delete=models.PROTECT, default='')
+    empresa = models.CharField("Empresa", max_length=100, default='Padrão', blank=True, null=True)
     descricao = models.CharField("Descrição", max_length=100, default='Padrão', blank=True, null=True)
-    equipamento = models.ForeignKey(Equipamento, on_delete=models.PROTECT, blank=False, null=False)
+    equipamento = models.CharField("Equipamento", max_length=100, default='Padrão', blank=True, null=True)
     status = models.CharField("Status", max_length=2, default='1')
     data_evento = models.DateTimeField(blank=True, null=True)

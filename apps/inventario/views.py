@@ -1,14 +1,17 @@
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
+from django.utils import timezone
 
 from .forms import EquipamentoForm
-from .models import TipoEquipamento, Equipamento, Acessorio
+from .models import TipoEquipamento, Equipamento, Acessorio, HistoricoEquipamento
 from django.views.generic import (
     ListView,
     UpdateView,
     CreateView,
     DeleteView
 )
+
+from ..empresa.models import Empresa
 
 
 class TipoEquipamentoList(ListView):
@@ -71,6 +74,14 @@ class EquipamentoCreate(CreateView):
         equipamento = form.save(commit=False)
         equipamento.empresa = self.request.user.usuario.empresa
         equipamento.save()
+        hist = HistoricoEquipamento(
+            empresa=self.request.user.usuario.empresa.pk,
+            descricao='Equipamento incluído!',
+            equipamento=equipamento.serial,
+            status='1',
+            data_evento=timezone.now()
+        )
+        hist.save()
         return super(EquipamentoCreate, self).form_valid(form)
 
 
