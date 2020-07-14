@@ -7,5 +7,22 @@
         {{ form }}
         <button type="submit">Salvar</button>
     </form>
+    <br>
+    <h2>Contratos</h2>
+{% if object.contrato_set.count > 0 %}
+    {% for contrato in object.contrato_set.all %}
+        <a href="{% url 'edit_contratos' contrato.pk %}">{{ contrato }}</a><br>
+    {% endfor %}
+{% else %}
+    <p>Não há contratos</p>
+{% endif %}
 
+    <h2>Notas emitidas</h2>
+{% if object.notacobranca_set.count > 0 %}
+    {% for nota in object.notacobranca_set.all %}
+        <a href="{% url 'edit_nota_cobranca' nota.pk %}">{{ nota }}</a><br>
+    {% endfor %}
+{% else %}
+    <p>Não há notas emitidas</p>
+{% endif %}
 {% endblock %}

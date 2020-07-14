@@ -40,6 +40,9 @@ class Contrato(models.Model):
     def get_absolute_url(self):
         return reverse('list_contratos')
 
+    def __str__(self):
+        return str(self.codigo) + ' - ' + self.cliente.nome
+
 
 class QuadroAcessorio(models.Model):
     codigo = models.AutoField("Código", primary_key=True, blank=False, null=False)

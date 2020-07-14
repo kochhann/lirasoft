@@ -64,14 +64,14 @@ class ClientesList(ListView):
 class ClientesEdit(UpdateView):
     model = Cliente
     fields = ['nome', 'razaoSocial', 'responsavel', 'inscestadual', 'inscmunicipal',
-              'telefone', 'email', 'site', 'endRua', 'endComplemento', 'endCidade', 'endUF',
+              'telefone', 'email', 'site', 'endRua', 'endComplemento', 'cidade', 'estado',
               'endCEP', 'senhaWeb', 'tipo', 'restricao', 'textorestricao']
 
 
 class ClientesCreate(CreateView):
     model = Cliente
     fields = ['cnpjCpf', 'nome', 'razaoSocial', 'responsavel', 'inscestadual', 'inscmunicipal',
-              'telefone', 'email', 'site', 'endRua', 'endComplemento', 'endCidade', 'endUF',
+              'telefone', 'email', 'site', 'endRua', 'endComplemento', 'cidade', 'estado',
               'endCEP', 'senhaWeb', 'tipo']
 
     def form_valid(self, form):

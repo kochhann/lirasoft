@@ -60,4 +60,13 @@
     {% if object.quadroequipamentos_set.count > 0 %}
         <a href="{% url 'desvincular_equipamento' gContrato=object.pk gEmpresa=request.session.empresa_id %}" class="btn btn-success">Desvincular Equipamentos</a>
     {% endif %}
+    <br><br><br>
+    <b>Notas emitidas</b><br>
+{% if object.notacobranca_set.count > 0 %}
+    {% for nota in object.notacobranca_set.all %}
+        <a href="{% url 'edit_nota_cobranca' nota.pk %}">{{ nota }}</a><br>
+    {% endfor %}
+{% else %}
+    <p>Não há notas emitidas</p>
+{% endif %}
 {% endblock %}

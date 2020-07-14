@@ -3,6 +3,23 @@ from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import User
 
+
+class Estado(models.Model):
+    sigla = models.CharField(max_length=2)
+    nome = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.sigla + " – " + self.nome
+
+
+class Cidade(models.Model):
+    nome = models.CharField(max_length=50)
+    estado = models.ForeignKey(Estado, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return self.nome
+
+
 class Empresa(models.Model):
     cnpjCpf = models.CharField("CNPJ / CPF", max_length=100, primary_key=True)
     nome = models.CharField("Nome", max_length=100)
@@ -12,8 +29,10 @@ class Empresa(models.Model):
     inscmunicipal = models.CharField("Inscricao Municipal", max_length=100, default='00000000')
     telefone = models.CharField("Telefone", max_length=100)
     endRua = models.CharField("Rua", max_length=100, default='01')
-    endComplemento = models.CharField("Complemento", max_length=100, default='01')
-    endCidade = models.CharField("Cidade", max_length=100, default='01')
+    cidade = models.ForeignKey(Cidade, on_delete=models.PROTECT)
+    estado = models.ForeignKey(Estado, on_delete=models.PROTECT)
+    # endComplemento = models.CharField("Complemento", max_length=100, default='01')
+    # endCidade = models.CharField("Cidade", max_length=100, default='01')
     endUF = models.CharField("UF", max_length=100, default='RS')
     endCEP = models.CharField("CEP", max_length=10, default='00000000')
     email = models.CharField("E-mail", max_length=100)
@@ -66,8 +85,10 @@ class Cliente(models.Model):
     site = models.CharField("Site", max_length=100, blank=True, null=True)
     endRua = models.CharField("Rua", max_length=100, blank=True, null=True)
     endComplemento = models.CharField("Complemento", max_length=100, blank=True, null=True)
-    endCidade = models.CharField("Cidade", max_length=100, blank=True, null=True)
-    endUF = models.CharField("UF", max_length=100, blank=True, null=True)
+    cidade = models.ForeignKey(Cidade, on_delete=models.PROTECT)
+    estado = models.ForeignKey(Estado, on_delete=models.PROTECT)
+    # endCidade = models.CharField("Cidade", max_length=100, blank=True, null=True)
+    # endUF = models.CharField("UF", max_length=100, blank=True, null=True)
     endCEP = models.CharField("CEP", max_length=10, blank=True, null=True)
     senhaWeb = models.CharField("Senha", max_length=100, blank=True, null=True)
     tipo = models.CharField("Tipo", max_length=2, choices=TIPO, default='01')
@@ -87,4 +108,3 @@ class Cliente(models.Model):
 
     def __str__(self):
         return self.nome
-

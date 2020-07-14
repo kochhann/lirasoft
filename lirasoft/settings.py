@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'apps.faturamento',
     'apps.launcher',
     'bootstrapform',
+    'smart_selects',
 ]
 
 MIDDLEWARE = [
@@ -67,7 +68,7 @@ WSGI_APPLICATION = 'lirasoft.wsgi.application'
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+    'postgres': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'lirasoft',
         'USER': 'postgres',
@@ -76,7 +77,7 @@ DATABASES = {
         'PORT': '5432',
     },
 
-    'sqlite': {
+    'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }

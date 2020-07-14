@@ -1,3 +1,4 @@
+from django.conf.urls import url
 from django.contrib import admin
 from django.urls import path, include
 
@@ -9,4 +10,5 @@ urlpatterns = [
     path('locacao/', include('apps.locacao.urls')),
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
+    url(r'^chaining/', include('smart_selects.urls')),
 ]
