@@ -1,10 +1,61 @@
+from datetime import datetime
+from decimal import Decimal
+
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import CreateView, ListView, UpdateView, DeleteView
+
+from apps.empresa.models import Cliente, Empresa
 from apps.faturamento.forms import NotaCobrancaForm
 from apps.faturamento.models import NotaCobranca
+from apps.locacao.models import Contrato
+from django.contrib import messages
+
+
+def Replace(str1):
+    maketrans = str1.maketrans
+    final = str1.translate(maketrans(',.', '.,'))
+    return final
+
+
+def geraNotaContrato(request, gContrato, gEmpresa):
+    request.session['contrato'] = gContrato
+    # request.session['empresa'] = gEmpresa
+    contrato = Contrato.objects.get(empresa=gEmpresa, codigo=gContrato)
+    cliente = Cliente.objects.get(empresa=gEmpresa, cnpjCpf=contrato.cliente.pk)
+    request.session['cnpjcliente'] = cliente.cnpjCpf
+    request.session['nomecliente'] = cliente.nome
+    request.session['valorcontrato'] = str(contrato.valor)
+    return render(request, 'faturamento/geranotacontrato_form.html')
+
+
+def gravaNotaContrato (request, gContrato, gEmpresa):
+    urlms = '/locacao/contrato/editar/' + str(gContrato) + '/'
+    datafechamento = request.POST.get('dataFechamentoNForm')
+    valor = request.POST.get('valorNForm') or "0"
+    pedido = request.POST.get('pedidoNForm') or ""
+    obs = request.POST.get('obsNotaNForm') or ""
+    empr = Empresa.objects.get(cnpjCpf=gEmpresa)
+    cont = Contrato.objects.get(empresa=gEmpresa, codigo=gContrato)
+    cli = Cliente.objects.get(empresa=gEmpresa, cnpjCpf=cont.cliente.pk)
+    print(valor)
+    print(Replace(valor))
+    nota = NotaCobranca(
+        empresa=empr,
+        cnpjcliente=cli,
+        contrato=cont,
+        datafechamento=datetime.strptime(datafechamento, '%d/%m/%Y'),
+        valor=Decimal(Replace(valor.replace('.', ''))),
+        pedido=pedido,
+        obsnota=obs,
+        data_inclusao=timezone.now()
+    )
+    nota.save()
+
+    messages.success(request, 'Nota gerada com sucesso!')
+    return redirect(urlms)
 
 
 class NotaCobrancaCreate(CreateView):

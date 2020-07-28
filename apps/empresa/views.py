@@ -80,6 +80,7 @@ class ClientesCreate(CreateView):
         cliente.save()
         return super(ClientesCreate, self).form_valid(form)
 
+
 class ClientesDelete(DeleteView):
     model = Cliente
     success_url = reverse_lazy('list_clientes')

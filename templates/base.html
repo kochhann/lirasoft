@@ -21,6 +21,11 @@
     <link rel="stylesheet" href="{% static 'css/fonts.css' %}" type="text/css" />
     <link rel="stylesheet" href="{% static 'css/responsive.css' %}" type="text/css" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Date & Time Picker CSS -->
+	<link rel="stylesheet" href="{% static 'css/components/datepicker.css' %}" type="text/css" />
+	<link rel="stylesheet" href="{% static 'css/components/timepicker.css' %}" type="text/css" />
+    <!-- Bootstrap Select CSS -->
+	<link rel="stylesheet" href="{% static 'css/components/bs-select.css' %}" type="text/css" />
 
     <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" />
 
@@ -82,7 +87,7 @@
 
 			<div class="container clearfix">
 				<h1>Bem vindo ao Lira Soft</h1>
-				<span>Você está logado como {{ request.user.first_name }} {{ request.user.last_name }} na empresa {{ request.session.empresa }}</span>
+				<span>Você está logado como {{ request.user.first_name }} {{ request.user.last_name }} na empresa {{ request.session.empresa_nome }}</span>
             </div>
 
 		</section><!-- #page-title end -->
@@ -144,11 +149,56 @@
     ============================================= -->
     <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/plugins.js' %}"></script>
+
+    <!-- Date & Time Picker JS -->
+	<script src="{% static 'js/components/moment.js' %}"></script>
+	<script src="{% static 'js/components/datepicker.js' %}"></script>
+	<script src="{% static 'js/components/timepicker.js' %}"></script>
+
+	<!-- Include Date Range Picker -->
+	<script src="{% static 'js/components/daterangepicker.js' %}"></script>
     <!-- Google Map JavaScripts
     ============================================= -->
     <script type="text/javascript" src="{% static 'js/jquery.gmap.js' %}"></script>
     <!-- Footer Scripts
     ============================================= -->
     <script type="text/javascript" src="{% static 'js/functions.js' %}"></script>
+
+    <!-- JQuery Mask-->
+    <script src="https://igorescobar.github.io/jQuery-Mask-Plugin/js/jquery.mask.min.js"></script>
+
+    <!-- Custom codes -->
+    <script>
+
+		$(function() {
+		    $('.dinheiro').mask('#.##0,00', {reverse: true});
+
+			$('.component-datepicker.default').datepicker({
+				autoclose: true,
+				startDate: "today",
+			});
+
+			$('.component-datepicker.today').datepicker({
+				autoclose: true,
+				todayHighlight: true,
+				format: "dd/mm/yyyy",
+				daysOfWeekDisabled: "0",
+				daysOfWeekHighlighted: "0",
+				showClose: true
+			});
+
+			$('.component-datepicker.past-enabled').datepicker({
+				autoclose: true,
+			});
+
+			$('.component-datepicker.format').datepicker({
+				autoclose: true,
+				format: "dd-mm-yyyy"
+			});
+
+			$('.component-datepicker.autoclose').datepicker();
+
+		});
+	</script>
 </body>
 </html>

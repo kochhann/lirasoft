@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+    <!-- Gerar Nota de Cobrança -> Contrato
+    ============================================= -->
+        <h3>Gerar Nota Individual - Contrato {{ request.session.contrato }} | {{ request.session.nomecliente }}</h3>
+        <form id="gerarNotaForm" name="gerarNotaForm" class="nobottommargin"
+              action="{% url 'grava_nota_contrato' gContrato=request.session.contrato gEmpresa=request.session.empresa_id %}" method="POST">
+        {% csrf_token %}
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="dataFechamentoNForm">Data de fechamento:</label>
+                    <input id="dataFechamentoNForm" type="text" value="" name="dataFechamentoNForm"
+                           class="form-control text-left component-datepicker today required" placeholder="DD/MM/YYYY">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="valorNForm">Valor: </label>
+                    <input type="text" class="form-control dinheiro" id="valorNForm" name="valorNForm" value={{ request.session.valorcontrato }} >
+                </div>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="pedidoNForm">Pedido:</label>
+                <input type="text" class="form-control" id="pedidoNForm" placeholder="Ex.: 2455-89"
+                       name="pedidoNForm">
+            </div>
+            <div class="form-group col-md-6">
+                <label for="obsNotaNForm">Observações desta nota:<small class="text-danger">*</small></label>
+                <textarea class="form-control textarea-message" id="obsNotaNForm" name="obsNotaNForm" rows="6" cols="30"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-success">Gerar</button>
+            <a href="{% url 'edit_contratos' request.session.contrato %}" class="btn btn-danger">Cancelar</a>
+
+        </form><!-- #gerar nota end -->
+
+{% endblock %}

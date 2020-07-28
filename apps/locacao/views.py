@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
-from .forms import QuadroEquipamentoForm, ContratoForm, QuadroAcessorioForm, ListaEquipamentoForm
+from .forms import *
 from .models import Contrato, QuadroEquipamentos, QuadroAcessorio, ListaEquipamento
 from django.views.generic import (
     ListView,
@@ -16,13 +16,14 @@ from ..empresa.models import Empresa
 from ..inventario.models import Equipamento, HistoricoEquipamento, Acessorio
 
 
-def vincularEquipamento(request, gContrato, gEmpresa):
+def vincularEquipamento(request, gContrato):
     request.session['contrato'] = gContrato
-    qsCont = Contrato.objects.filter(codigo=gContrato, ativo=True, empresa=gEmpresa)
+    empresa = request.user.usuario.empresa.pk
+    qsCont = Contrato.objects.filter(codigo=gContrato, ativo=True, empresa=empresa)
     request.session['n_contrato'] = qsCont[0].cliente.nome
     cadastrados = 0
     vinculados = 0
-    urlms = '/locacao/vincular_equipamento/' + str(gContrato) + '/' + str(gEmpresa) + '/'
+    urlms = '/locacao/vincular_equipamento/' + str(gContrato) + '/'
     if qsCont.exists():
         qsQEquip = qsCont[0].quadroequipamentos_set.all()
         if qsQEquip.exists():
@@ -42,52 +43,56 @@ def vincularEquipamento(request, gContrato, gEmpresa):
     return render(request, 'locacao/vinculaequipamento_form.html')
 
 
-def gravaEquipamentoVinculado(request, gContrato, gEmpresa):
+def gravaEquipamentoVinculado(request, gContrato):
+    urlms = '/locacao/vincular_equipamento/' + str(gContrato) + '/'
     serial = request.POST.get('vincularEquipFormSerie') or ""
-    equip = Equipamento.objects.filter(serial=serial, empresa=gEmpresa, ativo=True)
-    lEmpresa = Empresa.objects.filter(pk=gEmpresa)
-    empresa_logada = lEmpresa.first()
-    lCont = Contrato.objects.filter(codigo=gContrato, empresa=empresa_logada.pk)
-    contrato = lCont.first()
-    urlms = '/locacao/vincular_equipamento/' + str(gContrato) + '/' + str(gEmpresa) + '/'
+    empresa = request.user.usuario.empresa
+    try:
+        equip = Equipamento.objects.get(serial=serial, empresa=empresa.pk)
+    except:
+        messages.warning(request, 'O equipamento (' + serial + ') não foi localizado!')
+        return redirect(urlms)
+    if not equip.ativo:
+        messages.warning(request, 'O equipamento (' + serial + ') foi excluído em ' + equip.data_desativado.strftime('%d/%m/%Y') + '!')
+        return redirect(urlms)
+    contrato = Contrato.objects.get(codigo=gContrato, empresa=empresa.pk)
     lEqpContrato = contrato.listaequipamento_set.all()
     print(lEqpContrato.all())
     for item in lEqpContrato.all():
-        if item.equipamento.serial == serial and item.equipamento.ativo:
+        if item.equipamento.serial == serial and item.ativo:
             messages.warning(request, 'O equipamento (' + serial + ') já foi vinculado!')
             return redirect(urlms)
     if not equip:
         messages.warning(request, 'O equipamento (' + serial + ') não foi localizado!')
         return redirect(urlms)
-    iEquip = equip.first()
-    print(iEquip)
-    if not iEquip.ativo:
+    if not equip.ativo:
         messages.warning(request, 'O equipamento (' + serial + ') não foi localizado!')
         return redirect(urlms)
-    if iEquip.status == '4':
+    if equip.status == '4':
         messages.warning(request, 'O equipamento (' + serial + ') está perdido!')
         return redirect(urlms)
-    if iEquip.status == '3':
+    if equip.status == '3':
         messages.warning(request, 'O equipamento (' + serial + ') está em manutenção!')
         return redirect(urlms)
-    if iEquip.status == '2':
+    if equip.status == '2':
         messages.warning(request, 'O equipamento (' + serial + ') está locado!')
         return redirect(urlms)
-    if iEquip.status == '1':
-        print(iEquip.status)
-        iEquip.contract_bond()
+    if equip.status == '1':
+        print(equip.status)
+        equip.contract_bond()
         hist = HistoricoEquipamento(
-            empresa=gEmpresa,
-            descricao='Vinculado ao contrato ' + str(gContrato) + ' empresa ' + str(gEmpresa),
-            equipamento=serial,
-            status='2',
+            empresa=empresa,
+            descricao='Vinculado ao contrato ' + str(gContrato) + ' empresa ' + contrato.cliente.nome,
+            usuario=request.user.usuario,
+            equipamento=equip,
+            status=equip.status,
             data_evento=timezone.now()
         )
         hist.save()
         lista = ListaEquipamento(
-            empresa=empresa_logada,
+            empresa=empresa,
             contrato=contrato,
-            equipamento=iEquip,
+            equipamento=equip,
             data_inclusao=timezone.now()
         )
         lista.save()
@@ -96,17 +101,19 @@ def gravaEquipamentoVinculado(request, gContrato, gEmpresa):
     return redirect(urlms)
 
 
-def desvincularEquipamento(request, gContrato, gEmpresa):
+def desvincularEquipamento(request, gContrato):
     request.session['contrato'] = gContrato
-    qsCont = Contrato.objects.filter(codigo=gContrato, ativo=True, empresa=gEmpresa)
-    request.session['n_contrato'] = qsCont[0].cliente.nome
+    empresa = request.user.usuario.empresa.pk
+    contrato = Contrato.objects.get(codigo=gContrato, ativo=True, empresa=empresa)
+    request.session['n_contrato'] = contrato.cliente.nome
     vinculados = 0
-    urlms = '/locacao/desvincular_equipamento/' + str(gContrato) + '/' + str(gEmpresa) + '/'
-    if qsCont.exists():
-        qsEquip = qsCont[0].listaequipamento_set.all()
+    urlms = '/locacao/desvincular_equipamento/' + str(gContrato) + '/'
+    if contrato:
+        qsEquip = contrato.listaequipamento_set.all()
         if qsEquip.exists():
             for item in qsEquip.all():
-                vinculados = vinculados + 1
+                if item.ativo:
+                    vinculados = vinculados + 1
     else:
         messages.warning(request, 'Contrato não foi localizado!')
         return redirect(urlms)
@@ -114,38 +121,40 @@ def desvincularEquipamento(request, gContrato, gEmpresa):
     return render(request, 'locacao/desvinculaequipamento_form.html')
 
 
-def gravaEquipamentoDesvinculado(request, gContrato, gEmpresa):
+def gravaEquipamentoDesvinculado(request, gContrato):
     serial = request.POST.get('desvincularEquipFormSerie') or ""
-    equip = Equipamento.objects.filter(serial=serial, empresa=gEmpresa, ativo=True)
-    urlms = '/locacao/desvincular_equipamento/' + str(gContrato) + '/' + str(gEmpresa) + '/'
-
-    if not equip:
+    empresa = request.user.usuario.empresa
+    urlms = '/locacao/desvincular_equipamento/' + str(gContrato) + '/'
+    try:
+        equipamento = Equipamento.objects.get(serial=serial, empresa=empresa.pk)
+    except:
         messages.warning(request, 'O equipamento (' + serial + ') não foi localizado!')
         return redirect(urlms)
+    if not equipamento.ativo:
+        messages.warning(request, 'O equipamento (' + serial + ') foi excluído em ' + equipamento.data_desativado.strftime('%d/%m/%Y') + '!')
+        return redirect(urlms)
 
-    equipamento = equip.first()
-
-    lCont = Contrato.objects.filter(codigo=gContrato, empresa=gEmpresa)
-    contrato = lCont.first()
+    contrato = Contrato.objects.get(codigo=gContrato, empresa=empresa.pk)
     lEqpContrato = contrato.listaequipamento_set.all()
     contem = False
     for item in lEqpContrato.all():
-        if item.equipamento.serial == serial and item.equipamento.ativo:
+        if item.equipamento.serial == serial and item.ativo:
             item.soft_delete()
             contem = True
     if contem:
         equipamento.contract_unbond()
         hist = HistoricoEquipamento(
-            empresa=gEmpresa,
-            descricao='Desvinculado do contrato ' + str(gContrato) + ' empresa ' + str(gEmpresa),
-            equipamento=serial,
-            status='1',
+            empresa=empresa,
+            descricao='Desvinculado do contrato ' + str(gContrato) + ' empresa ' + contrato.cliente.nome,
+            equipamento=equipamento,
+            usuario=request.user.usuario,
+            status=equipamento.status,
             data_evento=timezone.now()
         )
         hist.save()
         messages.warning(request, 'O equipamento (' + serial + ') foi desvinculado!')
         return redirect(urlms)
-
+    messages.warning(request, 'O equipamento (' + serial + ') não está neste contrato!')
     return redirect(urlms)
 
 

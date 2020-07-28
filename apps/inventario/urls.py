@@ -14,5 +14,7 @@ urlpatterns = [
     path('acessorio/editar/<int:pk>/', AcessorioEdit.as_view(), name='edit_acessorios'),
     path('acessorio/criar/', AcessorioCreate.as_view(), name='create_acessorios'),
     path('acessorio/deletar/<int:pk>/', AcessorioDelete.as_view(), name='delete_acessorios'),
+    path('perda_equipamento/criar/<slug:equipamento_id>/', EquipamentoPerdidoCreate.as_view(), name='create_perda_equip'),
+    path('perda_equipamento/editar/<int:pk>/', EquipamentoPerdidoEdit.as_view(), name='edit_perda_equip'),
 
 ]

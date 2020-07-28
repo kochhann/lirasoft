@@ -1,8 +1,10 @@
+from datetime import datetime
+
 from django.utils import timezone
 from django.db import models
 from django.template.backends import django
 from django.urls import reverse
-from apps.empresa.models import Empresa
+from apps.empresa.models import Empresa, Usuario
 
 
 class TipoEquipamento(models.Model):
@@ -44,31 +46,21 @@ class Equipamento(models.Model):
     def soft_delete(self):
         self.ativo = False
         self.data_desativado = timezone.now()
-        hist = HistoricoEquipamento(
-            empresa=self.empresa.pk,
-            descricao='Equipamento excluído!',
-            equipamento=self.serial,
-            status='0',
-            data_evento=timezone.now()
-        )
-        hist.save()
         self.save()
 
+    def set_lost(self):
+        self.status = '4'
+
+
     def contract_bond(self):
-        if self.status == '1':
-            self.status = '2'
-            self.save()
-            return True
-        else:
-            return False
+        self.status = '2'
+        self.save()
+        return True
 
     def contract_unbond(self):
-        if self.status == '2':
-            self.status = '1'
-            self.save()
-            return True
-        else:
-            return False
+        self.status = '1'
+        self.save()
+        return True
 
     def get_absolute_url(self):
         return reverse('list_equipamentos')
@@ -100,8 +92,25 @@ class Acessorio(models.Model):
 
 class HistoricoEquipamento(models.Model):
     codigo = models.AutoField("Código", primary_key=True)
-    empresa = models.CharField("Empresa", max_length=100, default='Padrão', blank=True, null=True)
-    descricao = models.CharField("Descrição", max_length=100, default='Padrão', blank=True, null=True)
-    equipamento = models.CharField("Equipamento", max_length=100, default='Padrão', blank=True, null=True)
+    empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING, default=1)
+    descricao = models.CharField("Descrição", max_length=100, default='Padrão', blank=False, null=False)
+    equipamento = models.ForeignKey(Equipamento, on_delete=models.DO_NOTHING, default=1)
+    usuario = models.ForeignKey(Usuario, on_delete=models.DO_NOTHING, default=1)
     status = models.CharField("Status", max_length=2, default='1')
-    data_evento = models.DateTimeField(blank=True, null=True)
+    data_evento = models.DateTimeField(blank=False, null=False, default='2020-01-01')
+
+
+class EquipamentoPerdido(models.Model):
+    codigo = models.AutoField("Código", primary_key=True)
+    empresa = models.ForeignKey(Empresa, on_delete=models.PROTECT, default=1)
+    descricao = models.TextField("Descrição", max_length=100, default='Padrão', blank=False, null=False)
+    equipamento = models.ForeignKey(Equipamento, on_delete=models.PROTECT, default=1)
+    ativo = models.BooleanField("Ativo", blank=True, default=True)
+    ultimo_contrato = models.CharField("Último Contrato", max_length=100, default='00', blank=False, null=False)
+    data_evento = models.DateTimeField(blank=False, null=False, default='2020-01-01')
+    data_desativado = models.DateTimeField(blank=True, null=True, default='2020-01-01')
+
+    def soft_delete(self):
+        self.ativo = False
+        self.data_desativado = timezone.now()
+        self.save()

@@ -54,19 +54,32 @@
         {% endif %}
     </table>
     {% if object.quadroequipamentos_set.count > 0 %}
-        <a href="{% url 'vincular_equipamento' gContrato=object.pk gEmpresa=request.session.empresa_id %}" class="btn btn-success">Vincular Equipamentos</a>
+        <a href="{% url 'vincular_equipamento' gContrato=object.pk %}" class="btn btn-success">Vincular Equipamentos</a>
     {% endif %}
 
     {% if object.quadroequipamentos_set.count > 0 %}
-        <a href="{% url 'desvincular_equipamento' gContrato=object.pk gEmpresa=request.session.empresa_id %}" class="btn btn-success">Desvincular Equipamentos</a>
+        <a href="{% url 'desvincular_equipamento' gContrato=object.pk %}" class="btn btn-success">Desvincular Equipamentos</a>
     {% endif %}
     <br><br><br>
     <b>Notas emitidas</b><br>
-{% if object.notacobranca_set.count > 0 %}
-    {% for nota in object.notacobranca_set.all %}
-        <a href="{% url 'edit_nota_cobranca' nota.pk %}">{{ nota }}</a><br>
-    {% endfor %}
-{% else %}
+    {% if object.notacobranca_set.count > 0 %}
+    <table>
+        {% for nota in object.notacobranca_set.all %}
+            {% if not nota.cancelada %}
+        <tr>
+            <td>
+                <a href="{% url 'edit_nota_cobranca' nota.pk %}">{{ nota }}</a><br>
+            </td>
+            <td>
+                <a href="{% url 'delete_nota_cobranca' nota.pk %}"><i class="icon-trash"></i></a>
+            </td>
+        </tr>
+            {% endif %}
+        {% endfor %}
+    </table>
+    {% else %}
     <p>Não há notas emitidas</p>
-{% endif %}
+    {% endif %}
+    <a href="{% url 'create_nota_contrato' gContrato=object.pk gEmpresa=request.session.empresa_id %}"
+       class="btn btn-success">Nova Nota</a>
 {% endblock %}

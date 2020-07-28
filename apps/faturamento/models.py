@@ -24,7 +24,7 @@ class NotaCobranca(models.Model):
         self.save()
 
     def get_absolute_url(self):
-        return reverse('list_nota_cobranca')
+        return reverse('edit_nota_cobranca', args=[self.numnota])
 
     def __str__(self):
         return str(self.numnota) + ' - ' + str(self.cnpjcliente)

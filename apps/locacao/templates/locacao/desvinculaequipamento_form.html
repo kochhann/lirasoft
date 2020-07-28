@@ -6,7 +6,7 @@
     ============================================= -->
         <h3>Desvincular Equipamento - Contrato {{ request.session.contrato }} | {{ request.session.n_contrato }}</h3>
         <form id="desvincularEquipForm" name="desvincularEquipForm" class="nobottommargin"
-              action="{% url 'grava_equipamento_desv' gContrato=request.session.contrato gEmpresa=request.session.empresa_id %}" method="post">
+              action="{% url 'grava_equipamento_desv' gContrato=request.session.contrato %}" method="post">
         {% csrf_token %}
             <div class="col_full">
                 <label for="desvincularEquipFormSerie">Número de Série:</label>

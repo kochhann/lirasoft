@@ -1,11 +1,33 @@
 {% extends 'base.html' %}
 
 {% block main %}
-    Edit
+    {% if object.status == '4' %}
+    <div class="style-msg2 errormsg">
+    <div class="msgtitle">Equipamento registrado como PERDIDO ou ROUBADO:</div>
+        <div class="sb-msg">
+            <ul>
+                <li>Serial: {{ object }}</li>
+                <li>Data do registro: {{ perda.data_evento }}</li>
+                <li>Último contrato: {{ ultimo_contrato.codigo }} - {{ ultimo_contrato.cliente.nome }}</li>
+                <li>Detalhes: {{ perda.descricao }}</li>
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+
     <form method="POST">
         {% csrf_token %}
         {{ form }}
         <button type="submit">Salvar</button>
     </form>
+    {% if object.serial != '' %}
+        {% if object.status != '4' %}
+        <a href="{% url 'create_perda_equip' object.serial %}"
+           class="btn btn-danger">Perdido</a>
+        {% else %}
+        <a href="{% url 'edit_perda_equip' perda.pk %}"
+           class="btn btn-success">Encontrado</a>
+        {% endif %}
+    {% endif %}
 
 {% endblock %}

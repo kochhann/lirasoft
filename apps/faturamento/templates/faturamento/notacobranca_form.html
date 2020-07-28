@@ -7,7 +7,8 @@
         <table>
           {{ form.as_table }}
         </table>
-        <button type="submit">Salvar</button>
+        <button type="submit" class="btn btn-success">Salvar</button>
+        <a href="{% url 'edit_contratos' request.session.contrato %}" class="btn btn-danger">Cancelar</a>
     </form>
 
 {% endblock %}
